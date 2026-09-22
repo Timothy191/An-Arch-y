@@ -1,0 +1,33 @@
+name: Bootstrap An-Arch-y from Omarchy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.repository == 'Timothy191/An-Arch-y'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone source snapshot
+        run: |
+          git clone --branch quattro --single-branch https://github.com/Timothy191/omarchy.git source
+
+      - name: Replace target with source snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd source
+          rm -rf .git
+          git init -b main
+          git config user.name "An-Arch-y Bootstrap"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Bootstrap An-Arch-y from Timothy191/omarchy quattro"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Timothy191/An-Arch-y.git"
+          git push --force origin main
